@@ -24,17 +24,27 @@ let urls = [
 ]
     
 const fetchData = async (callback) => {
-        for (let i=0; i<urls.length; i++) {
+    let data = [];
+    for (let i=0; i<urls.length; i++) {
+        try {
             const result = await axios.get(urls[i].url);
             const $ = cheerio.load(result.data);
             const vendor = $('#merchant-info').text();
             const regex = "Amazon";
             let found = vendor.match(regex);
-            callback({asin: urls[i].asin, state: found });
+            if (found !== null) {
+                found = true;
+            } else {
+                found = false;
+            }
+            data.push({asin: urls[i].asin, state: found });
+        } catch(e) {
+            console.log(e);
         }
-
+    }
+        return callback(data);
     };
-    
+
 fetchData( (callback) => {
         console.log(callback);
 });
