@@ -25,6 +25,14 @@ mongoose.connect(process.env.MONGO_URI,
     }
 )
 
+axios.get('https://amazon.fr/Staedtler-plastic-plastique-phtalate-52650/dp/B0007OEE7E/ref=sr_1_5?__mk_fr_FR=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=staedtler&qid=1600723282&sr=8-5')
+.then( (response) => {
+    console.log(response);
+})
+.catch( (error) => {
+    console.log(error);
+})
+
 mongoose.connection.on('open', () => {
     app.listen(process.env.PORT, () => {
         console.log(`Server running on port ${process.env.PORT}`);

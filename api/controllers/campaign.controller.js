@@ -18,8 +18,6 @@ exports.createCampaign = async (req, res) => {
     }
 }
 
-
-
 exports.getCampaigns = async (req, res) => {
     const uris = await Uri.findOne({_id: '5f6bd8296cef6f40097f8657'});
     const uri1 = uris.uri1;
@@ -52,7 +50,7 @@ exports.toogleCampaignState = async (req, res) => {
     foundCampaign.state = !foundCampaign.state;
     try {
         foundCampaign.save();
-       return res.status(200).send({message: 'campaign updated'});
+        return res.status(200).send({message: 'campaign updated'});
     } catch(error) {
         return res.status(500).send({ error: error})
     }

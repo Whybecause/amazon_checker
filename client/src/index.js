@@ -1,7 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/fonts.css';
+import './styles/themes.css';
+import './styles/layout.css';
+import './styles/index.css';
+import './styles/responsive.css';
+
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
