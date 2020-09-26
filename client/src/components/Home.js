@@ -10,24 +10,61 @@ function Home() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  let updateBuyboxUrl = "/api/buybox";
   let allCampaignsUrl = "/api/campaigns/all";
-  let problematicCampaignsUrl = "/api/campaigns";
+  let problematicCampaignsUrl = "/api/campaigns/problem";
 
-  // const toggleState = async (event, id) => {
-  //   console.log(event.target.id);
-    // setToggleLoading(true);
-    // await axios.patch(`/api/campaigns/${id}`)
-    // .then( (response) => {
-    //   setToggleLoading(false);
-    //   setMessage(response.data.message);
-    //   console.log(response.data);
-    // })
-    // .catch( (e) => {
-    //   setToggleLoading(false);
-    //   console.log(e);
-    // })
-  // }
+  const toggleState = async (id) => {
+    setToggleLoading(true);
+    await axios.patch(`/api/state/${id}`)
+    .then( (response) => {
+      setToggleLoading(false);
+      // setMessage(response.data.message);
+      setCampaigns[id](response.data.state);
+      console.log(response.data);
+    })
+    .catch( (e) => {
+      setToggleLoading(false);
+      console.log(e);
+    })
+  }
 
+  const updateBuybox = async (url) => {
+    setLoading(true);
+    await axios.get(url)
+    .then( (response) => {
+        if (response.data.updated) {
+          const updated = response.data.updated;
+          updated.map( (up) => {
+            const id = up.id
+            const newbuybox = up.newbuybox;
+            axios.patch(
+              `/api/buybox/${id}`, {newbuybox}, {headers: {}}
+              )
+              .then( (response) => {
+                setCampaigns('')
+                setMessage(response.data.message);
+                setLoading(false);
+              })
+              .catch( (error) => {
+                setLoading(false);
+                setCampaigns('');
+                setError('error saving buybox');
+              })
+            })
+          } if (response.data.updated.length === 0) {
+            setLoading(false);
+            setCampaigns('');
+            setMessage('Nothing to update');
+          }
+
+    })
+    .catch( (error) => {
+      setLoading(false);
+      setCampaigns('');
+      setError('Error getting buybox');
+    })
+  }
   const getCampaigns = async (url) => {
     setLoading(true);
     await axios
@@ -54,6 +91,7 @@ function Home() {
     <Container>
 
       <h1 className="text-center jumbotron">Amazon Checker</h1>
+      <button className="btn btn-secondary" onClick={ () => updateBuybox(updateBuyboxUrl)}>Check Buybox</button>
       <button className="btn btn-danger" onClick={ () => getCampaigns(problematicCampaignsUrl)}>Problematic Campaigns</button>
       <button className="btn btn-primary" onClick={ () => getCampaigns(allCampaignsUrl)}>All Campaigns</button>
       {loading ? (
@@ -85,9 +123,9 @@ function Home() {
                       </span>
                     )}
                   </div>
-                  {/* <div>
+                  <div>
                     <button id={campaign.asin} disabled={toggleLoading} onClick={ () => toggleState(campaign.id)} className="btn btn-primary">Change State</button>
-                  </div> */}
+                  </div>
                 </td>
                 <td>
                   {campaign.buybox ? (
@@ -106,10 +144,10 @@ function Home() {
         </Table>
       ) : (
         error ? (
-          <div className="alert alert-danger">{error}</div>
+          <div className="alert alert-danger text-center">{error}</div>
         ) : (
           message ? (
-            <div className="alert alert-success">{message}</div>
+            <div className="alert alert-success text-center">{message}</div>
           ) : (
             null
           )
