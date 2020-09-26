@@ -1,1 +1,10 @@
 
+.spinner-svg {
+    background: url('../assets/spinner.svg') center no-repeat;
+    height: 50vh;
+    width: 50vw;
+}
+
+.c-bg {
+    background-color: white;
+}
