@@ -1,27 +1,55 @@
 import React, { useState, useEffect } from "react";
-import { Container, Table } from "react-bootstrap";
-
+import { Container, Table, Form } from "react-bootstrap";
+import { useForm } from "react-hook-form";
 import axios from "axios";
 
 function Home() {
+  const { register, handleSubmit } = useForm();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(false);
   const [toggleLoading, setToggleLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  let [ showCreateCampaign, setShowCreateCampaign ] = useState(false);
 
   let updateBuyboxUrl = "/api/buybox";
   let allCampaignsUrl = "/api/campaigns/all";
   let problematicCampaignsUrl = "/api/campaigns/problem";
+  let createCampaignUrl = "/api/campaigns";
 
-  const toggleState = async (id) => {
+  // WHEN CLICKING ON BUTTON CREATE CAMPAIGN: DISPLAY FORM
+  const showFormCreateCampaign = () => {
+    showCreateCampaign = !showCreateCampaign;
+    setShowCreateCampaign(showCreateCampaign);
+    setMessage('');
+  }
+
+  // POST REQUEST WHEN SUBMITING FORM TO CREATE CAMPAIGN
+  const createCampaign = async (data, e) => {
+    const result = await axios.post(createCampaignUrl, data);
+    try {
+      getCampaigns(allCampaignsUrl);
+      e.target.reset();
+    } catch (error) {
+      console.log(result.data);
+    }
+  }
+
+  useEffect( () => {
+    getCampaigns(allCampaignsUrl);
+  }, []);
+
+  // CHANGE CAMPAIGN STATE WHEN CLICK BUTTON
+  const toggleState = async (event, id) => {
     setToggleLoading(true);
+    event.preventDefault();
+    const index = event.target.id;
     await axios.patch(`/api/state/${id}`)
     .then( (response) => {
       setToggleLoading(false);
-      // setMessage(response.data.message);
-      setCampaigns[id](response.data.state);
-      console.log(response.data);
+      let newArr = [...campaigns];
+      newArr[index] = {id: response.data.id, campaignName: response.data.campaignName, asin: response.data.asin, state: response.data.state, buybox: response.data.buybox}
+      setCampaigns(newArr)
     })
     .catch( (e) => {
       setToggleLoading(false);
@@ -29,6 +57,19 @@ function Home() {
     })
   }
 
+  // DELETE CAMPAIGN WHEN CLICKING THE DELETE BUTTON
+  const deleteCampaign = async (id) => {
+    try {
+      const result = await axios.delete(`/api/campaigns/${id}`)
+      getCampaigns(allCampaignsUrl);
+    } 
+    catch (e) {
+      console.log(e);
+    }
+
+  }
+
+  // FETCH BUYBOX ON AMAZON : GET REQUEST TO HAVE DATE THEN PATCH REQUEST TO STORE BUYBOX STATE IN DB
   const updateBuybox = async (url) => {
     setLoading(true);
     await axios.get(url)
@@ -62,9 +103,11 @@ function Home() {
     .catch( (error) => {
       setLoading(false);
       setCampaigns('');
-      setError('Error getting buybox');
+      setError(error.response.data.error);
     })
   }
+
+  // GET CAMPAIGNS AND PROBLEMATIC CAMPAIGNS
   const getCampaigns = async (url) => {
     setLoading(true);
     await axios
@@ -94,6 +137,27 @@ function Home() {
       <button className="btn btn-secondary" onClick={ () => updateBuybox(updateBuyboxUrl)}>Check Buybox</button>
       <button className="btn btn-danger" onClick={ () => getCampaigns(problematicCampaignsUrl)}>Problematic Campaigns</button>
       <button className="btn btn-primary" onClick={ () => getCampaigns(allCampaignsUrl)}>All Campaigns</button>
+      <button className="btn btn-primary" onClick={showFormCreateCampaign}>Create Campaign</button>
+      
+      {/* After Click the button "create campaign", form is displayed */}
+      {showCreateCampaign && (
+        <Form onSubmit={handleSubmit(createCampaign)} className="d-flex">
+          <Form.Control
+          type="text"
+          name="campaignName"
+          placeholder="Campaign Name"
+          ref={register({ required: true })}
+          />
+          <Form.Control
+          type="text"
+          name="asin"
+          placeholder="ASIN"
+          ref={register({ required: true })}
+          />
+          <button className="btn btn-primary" type="submit">Create</button>
+        </Form>
+        )}
+      
       {loading ? (
         <div className="spinner-svg"></div>
       ) : campaigns.length ? (
@@ -104,11 +168,12 @@ function Home() {
               <th>ASIN</th>
               <th>Campaign State</th>
               <th>Buybox</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {campaigns.map((campaign) => (
-              <tr key={campaign.id}>
+            {campaigns.map((campaign, index) => (
+              <tr key={index}>
                 <td>{campaign.campaignName}</td>
                 <td>{campaign.asin}</td>
                 <td>
@@ -123,9 +188,7 @@ function Home() {
                       </span>
                     )}
                   </div>
-                  <div>
-                    <button id={campaign.asin} disabled={toggleLoading} onClick={ () => toggleState(campaign.id)} className="btn btn-primary">Change State</button>
-                  </div>
+
                 </td>
                 <td>
                   {campaign.buybox ? (
@@ -137,6 +200,17 @@ function Home() {
                       🔴
                     </span>
                   )}
+                </td>
+                <td>
+                  {campaign.state ? (
+                    <button id={index} disabled={toggleLoading} onClick={ (event) => toggleState(event, campaign.id)} className="btn btn-secondary">Stop</button>
+                  ) : (
+                    <button id={index} disabled={toggleLoading} onClick={ (event) => toggleState(event, campaign.id)} className="btn btn-success">Activate</button>
+   
+                  )}
+                  
+                
+                  <button id={campaign.id} onClick={ () => deleteCampaign(campaign.id)} className="btn btn-danger">Delete</button>
                 </td>
               </tr>
             ))}
@@ -154,6 +228,7 @@ function Home() {
         )
       )
 }
+
 
 
     </Container>
