@@ -11,6 +11,9 @@ function Home() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   let [ showCreateCampaign, setShowCreateCampaign ] = useState(false);
+  const [ msgCheckSuccess, setMsgCheckSuccess ] = useState('');
+  const [ msgCheckError, setMsgCheckError ] = useState('');
+  const [ msgSaveSuccess, setMsgSaveSuccess ] = useState('');
 
   let updateBuyboxUrl = "/api/buybox";
   let allCampaignsUrl = "/api/campaigns/all";
@@ -35,9 +38,9 @@ function Home() {
     }
   }
 
-  useEffect( () => {
-    getCampaigns(allCampaignsUrl);
-  }, []);
+  // useEffect( () => {
+  //   getCampaigns(allCampaignsUrl);
+  // }, []);
 
   // CHANGE CAMPAIGN STATE WHEN CLICK BUTTON
   const toggleState = async (event, id) => {
@@ -69,43 +72,79 @@ function Home() {
 
   }
 
-  // FETCH BUYBOX ON AMAZON : GET REQUEST TO HAVE DATE THEN PATCH REQUEST TO STORE BUYBOX STATE IN DB
   const updateBuybox = async (url) => {
-    setLoading(true);
+    // get all campaigns from db :
     await axios.get(url)
-    .then( (response) => {
-        if (response.data.updated) {
-          const updated = response.data.updated;
-          updated.map( (up) => {
-            const id = up.id
-            const newbuybox = up.newbuybox;
-            axios.patch(
-              `/api/buybox/${id}`, {newbuybox}, {headers: {}}
-              )
-              .then( (response) => {
-                setCampaigns('')
-                setMessage(response.data.message);
-                setLoading(false);
-              })
-              .catch( (error) => {
-                setLoading(false);
-                setCampaigns('');
-                setError('error saving buybox');
-              })
+    .then( (campaigns) => {
+      campaigns.data.map( async (campaign) => {
+        // fetch buybox for each campaign : 
+        await axios.get(`/api/buybox/${campaign.id}`)
+        .then(async (result) => {
+          if (result.data.updated.length) {
+            setMsgCheckSuccess(result.data.updated[0].asin + 'Old :' + ' ' + result.data.updated[0].oldbuybox + 'New : ' + ' ' + result.data.updated[0].newbuybox);
+            const newbuybox = result.data.updated[0].newbuybox;
+            await axios.patch(`/api/buybox/${result.data.updated[0].id}`, {newbuybox}, {headers: {}})
+            .then( (response) => {
+              console.log(response.data.message);
+              setMsgSaveSuccess(response.data.message);
             })
-          } if (response.data.updated.length === 0) {
-            setLoading(false);
-            setCampaigns('');
-            setMessage('Nothing to update');
+            .catch( (error) => {
+              console.log(error);
+            })
+          } 
+          else {
+            setMsgCheckError(result.data.noChange[0].asin + ' ' + 'No change...');
           }
-
+        })
+        .catch( (error) => {
+          console.log(error);
+        })
+      })
     })
     .catch( (error) => {
-      setLoading(false);
-      setCampaigns('');
-      setError(error.response.data.error);
+      console.log(error);
     })
   }
+
+  // FETCH BUYBOX ON AMAZON : GET REQUEST TO HAVE DATE THEN PATCH REQUEST TO STORE BUYBOX STATE IN DB
+  // const updateBuybox = async (url) => {
+  //   setLoading(true);
+  //   await axios.get(url)
+  //   .then( (response) => {
+  //       if (response.data.updated) {
+  //         const updated = response.data.updated;
+  //         updated.map( (up) => {
+  //           const id = up.id
+  //           const newbuybox = up.newbuybox;
+  //           axios.patch(
+  //             `/api/buybox/${id}`, {newbuybox}, {headers: {}}
+  //             )
+  //             .then( (response) => {
+  //               setCampaigns('')
+  //               setMessage(response.data.message);
+  //               setLoading(false);
+  //             })
+  //             .catch( (error) => {
+  //               setLoading(false);
+  //               setCampaigns('');
+  //               setError('error saving buybox');
+  //               console.log(error);
+  //             })
+  //           })
+  //         } if (response.data.updated.length === 0) {
+  //           setLoading(false);
+  //           setCampaigns('');
+  //           setMessage('Nothing to update');
+  //         }
+
+  //   })
+  //   .catch( (error) => {
+  //     setLoading(false);
+  //     setCampaigns('');
+  //     setError(error.response.data.error);
+  //     console.log(error);
+  //   })
+  // }
 
   // GET CAMPAIGNS AND PROBLEMATIC CAMPAIGNS
   const getCampaigns = async (url) => {
@@ -134,7 +173,7 @@ function Home() {
     <Container>
 
       <h1 className="text-center jumbotron">Amazon Checker</h1>
-      <button className="btn btn-secondary" onClick={ () => updateBuybox(updateBuyboxUrl)}>Check Buybox</button>
+      <button className="btn btn-secondary" onClick={ () => updateBuybox(allCampaignsUrl)}>Check Buybox</button>
       <button className="btn btn-danger" onClick={ () => getCampaigns(problematicCampaignsUrl)}>Problematic Campaigns</button>
       <button className="btn btn-primary" onClick={ () => getCampaigns(allCampaignsUrl)}>All Campaigns</button>
       <button className="btn btn-primary" onClick={showFormCreateCampaign}>Create Campaign</button>
@@ -174,7 +213,7 @@ function Home() {
           <tbody>
             {campaigns.map((campaign, index) => (
               <tr key={index}>
-                <td>{campaign.campaignName}</td>
+                <td>{index} {campaign.campaignName} </td>
                 <td>{campaign.asin}</td>
                 <td>
                   <div>
@@ -223,11 +262,16 @@ function Home() {
           message ? (
             <div className="alert alert-success text-center">{message}</div>
           ) : (
-            null
+              null
+            )
           )
         )
-      )
+      
 }
+
+  <div>{msgCheckSuccess}</div>
+  <div>{msgCheckError}</div>
+  <div>{msgSaveSuccess}</div>
 
 
 

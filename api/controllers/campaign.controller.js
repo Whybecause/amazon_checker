@@ -4,6 +4,8 @@ const puppeteer = require("puppeteer");
 // MAJ .env if error on URL :
 const uri1 = process.env.uri1;
 const uri2 = process.env.uri2;
+const uri = process.env.uri;
+
 let user_agent = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0',
@@ -23,9 +25,9 @@ let user_agent = [
   'Mozilla/5.0 (Linux; Android 6.0.1; SAMSUNG SM-N910F Build/MMB29M) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/4.0 Chrome/44.0.2403.133 Mobile Safari/537.36',
   'Mozilla/5.0 (Linux; U; Android-4.0.3; en-us; Galaxy Nexus Build/IML74K) AppleWebKit/535.7 (KHTML, like Gecko) CrMo/16.0.912.75 Mobile Safari/535.7',
   'Mozilla/5.0 (Linux; Android 7.0; HTC 10 Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.83 Mobile Safari/537.36',
-  'curl/7.35.0',
-  'Wget/1.15 (linux-gnu)',
-  'Lynx/2.8.8pre.4 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/2.12.23',
+  // 'curl/7.35.0',
+  // 'Wget/1.15 (linux-gnu)',
+  // 'Lynx/2.8.8pre.4 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/2.12.23',
 ];
 let random_number = Math.floor(Math.random() * 20);
 
@@ -46,16 +48,13 @@ exports.createCampaign = async (req, res) => {
   }
 };
 
-// FRONT SIDE MAKE REQUEST TO GET BUYBOX + PATCH UPDATEBUYBOX IN DB WHEN CLICKING BUTTON
-// GET
 exports.getBuyBox = async (req, res) => {
   try {
-
-    const campaigns = await Campaign.find();
-    if (campaigns.length) {
+      const campaignId = req.params.id;
+      const campaign = await Campaign.findById(campaignId);
+      const asin = campaign.asin;
       let updated = [];
       let noChange= [];
-      for (let i = 0; i < campaigns.length; i++) {
         const browser = await puppeteer.launch({
           headless: true,
           args: [
@@ -67,7 +66,7 @@ exports.getBuyBox = async (req, res) => {
         });
         
         const page = await browser.newPage();
-        await page.setDefaultNavigationTimeout(60000);
+        await page.setDefaultNavigationTimeout(600000);
         // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
         await page.setRequestInterception(true);
         page.on('request', (req) => {
@@ -78,7 +77,7 @@ exports.getBuyBox = async (req, res) => {
           }
         });
         // ---------------
-        await page.goto(uri1 + campaigns[i].asin + uri2);
+        await page.goto(uri + asin);
         await page.waitForSelector("body");
         
         const buybox = await page.evaluate(() => {
@@ -92,25 +91,92 @@ exports.getBuyBox = async (req, res) => {
           }
           return buyboxState;
         });
+        console.log(asin + campaign.buybox + buybox);
         
-        if (buybox !== campaigns[i].buybox) {
-          updated.push({id: campaigns[i].id, asin: campaigns[i].asin, state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
+        if (buybox !== campaign.buybox) {
+          updated.push({id: campaign.id, asin: campaign.asin, state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
           
         } else {
-          noChange.push({id: campaigns[i].id, asin: campaigns[i].asin,  state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
+          noChange.push({id: campaign.id, asin: campaign.asin,  state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
         }
         await browser.close();
-      }
+      
       
       return res.send({updated: updated, noChange: noChange});
-      
-    } else {
-      return res.status(404).send({ error: "No campaign added yet" });
-    }
+
   } catch(e) {
     return console.log(e);
   }
   };
+
+
+
+// FRONT SIDE MAKE REQUEST TO GET BUYBOX + PATCH UPDATEBUYBOX IN DB WHEN CLICKING BUTTON
+// GET
+// exports.getBuyBox = async (req, res) => {
+//   try {
+
+//     const campaigns = await Campaign.find();
+//     if (campaigns.length) {
+//       let updated = [];
+//       let noChange= [];
+//       for (let i = 0; i < campaigns.length; i++) {
+//         const browser = await puppeteer.launch({
+//           headless: true,
+//           args: [
+//             "--no-sandbox",
+//             "--disable-setuid-sandbox",
+//             "--window-size=1920,1080",
+//             `--user-agent=${user_agent[random_number]}`,
+//           ],
+//         });
+        
+//         const page = await browser.newPage();
+//         await page.setDefaultNavigationTimeout(600000);
+//         // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
+//         await page.setRequestInterception(true);
+//         page.on('request', (req) => {
+//           if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
+//             req.abort();
+//           } else {
+//             req.continue();
+//           }
+//         });
+//         // ---------------
+//         await page.goto(uri + campaigns[i].asin);
+//         await page.waitForSelector("body");
+        
+//         const buybox = await page.evaluate(() => {
+//           let vendor = document.body.querySelector("#merchant-info").innerText;
+//           const regex = "Amazon";
+//           let buyboxState = vendor.match(regex);
+//           if (buyboxState !== null) {
+//             buyboxState = true;
+//           } else {
+//             buyboxState = false;
+//           }
+//           return buyboxState;
+//         });
+//         console.log(campaigns[i].asin + buybox);
+        
+//         if (buybox !== campaigns[i].buybox) {
+//           updated.push({id: campaigns[i].id, asin: campaigns[i].asin, state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
+          
+//         } else {
+//           noChange.push({id: campaigns[i].id, asin: campaigns[i].asin,  state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
+//         }
+//         await browser.close();
+//       }
+      
+//       return res.send({updated: updated, noChange: noChange});
+      
+//     } else {
+//       return res.status(404).send({ error: "No campaign added yet" });
+//     }
+//   } catch(e) {
+//     return console.log(e);
+//   }
+//   };
   
   // PATCH
 exports.updateBuyBoxInDb = async (req, res) => {
@@ -120,7 +186,7 @@ exports.updateBuyBoxInDb = async (req, res) => {
     campaign.buybox = newbuybox;
     try {
         campaign.save();
-        return res.send({message: 'Buybox Updated'})
+        return res.send({message: 'Buybox Updated for' + campaign.asin})
       } catch(e) {
           return console.log(e);
       }
