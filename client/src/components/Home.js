@@ -173,6 +173,7 @@ function Home() {
     <Container>
 
       <h1 className="text-center jumbotron">Amazon Checker</h1>
+      <a href="/campaigns">Campaigns</a>
       <button className="btn btn-secondary" onClick={ () => updateBuybox(allCampaignsUrl)}>Check Buybox</button>
       <button className="btn btn-danger" onClick={ () => getCampaigns(problematicCampaignsUrl)}>Problematic Campaigns</button>
       <button className="btn btn-primary" onClick={ () => getCampaigns(allCampaignsUrl)}>All Campaigns</button>

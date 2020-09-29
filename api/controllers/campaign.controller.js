@@ -194,17 +194,18 @@ exports.updateBuyBoxInDb = async (req, res) => {
 
 // GET
 exports.getAllCampaigns = async (req, res) => {
-  const campaigns = await Campaign.find();
-  getAllData(campaigns, function (response) {
-    return res.send(response);
-  });
-};
+    const campaigns = await Campaign.find();
+      getAllData(campaigns, function (response) {
+        return res.send(response);
+      });
+ };
 
 // GET
 exports.getProblematicCampaigns = async (req, res) => {
   const campaigns = await Campaign.find();
+  // Function map on campaigns :
   getProblematicData(campaigns, function(response) {
-      return res.send(response);
+    return res.send(response);
   })
 }
 
