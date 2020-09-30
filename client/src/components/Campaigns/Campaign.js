@@ -1,15 +1,15 @@
 import React from "react";
 
-const Campaign = (props) => {
+const Campaign = ({campaign, toggleState, toggleLoading, deleteCampaign}) => {
   return (
     <>
       <td>
-        {props.campaignName}
+        {campaign.campaignName}
       </td>
-      <td>{props.asin}</td>
+      <td>{campaign.asin}</td>
       <td>
         <div>
-          {props.state ? (
+          {campaign.state ? (
             <span role="img" aria-label="active">
               ✔
             </span>
@@ -21,7 +21,7 @@ const Campaign = (props) => {
         </div>
       </td>
       <td>
-        {props.buybox ? (
+        {campaign.buybox ? (
           <span role="img" aria-label="active">
             ✔
           </span>
@@ -32,20 +32,20 @@ const Campaign = (props) => {
         )}
       </td>
       <td>
-        {props.state ? (
+        {campaign.state ? (
           <button
-            id={props.index}
-            disabled={props.toggleLoading}
-            onClick={(event) => props.toggleState(event, props.id)}
+            id={campaign.index}
+            disabled={campaign.toggleLoading}
+            onClick={(event) => toggleState(event, campaign.id)}
             className="btn btn-secondary"
           >
             Stop
           </button>
         ) : (
           <button
-            id={props.index}
-            disabled={props.toggleLoading}
-            onClick={(event) => props.toggleState(event, props.id)}
+            id={campaign.index}
+            disabled={campaign.toggleLoading}
+            onClick={(event) => toggleState(event, campaign.id)}
             className="btn btn-success"
           >
             Activate
@@ -53,8 +53,8 @@ const Campaign = (props) => {
         )}
 
         <button
-          id={props.id}
-          onClick={() => props.deleteCampaign(props.id)}
+          id={campaign.id}
+          onClick={() => deleteCampaign(campaign.id)}
           className="btn btn-danger"
         >
           Delete

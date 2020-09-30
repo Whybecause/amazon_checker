@@ -9,6 +9,8 @@ const CampaignBox = (props) => {
   const [ campaignState, setCampaignState ] = useState();
   const { state, error, data } = useApi(props.url, campaignState);
   const [toggleLoading, setToggleLoading] = useState(false);
+
+  
   // Function makes PATCH request to update Campaign State in DB
   const toggleState = (event, id) => {
     let url = `/api/state/${id}`
@@ -51,11 +53,7 @@ const CampaignBox = (props) => {
                   data.map((campaign, index) => (
                     <tr key={index}>
                       <Campaign
-                        index={index}
-                        id={campaign.id}
-                        campaignName={campaign.campaignName}
-                        asin={campaign.asin}
-                        state={campaign.state}
+                      campaign={campaign}
                         buybox={campaign.buybox}
                         toggleLoading={toggleLoading}
                         toggleState={toggleState}
