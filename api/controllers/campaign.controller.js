@@ -196,7 +196,7 @@ exports.updateBuyBoxInDb = async (req, res) => {
 exports.getAllCampaigns = async (req, res) => {
     const campaigns = await Campaign.find();
       getAllData(campaigns, function (response) {
-        return res.send(response);
+        return res.status(200).send(response);
       });
  };
 
@@ -205,7 +205,7 @@ exports.getProblematicCampaigns = async (req, res) => {
   const campaigns = await Campaign.find();
   // Function map on campaigns :
   getProblematicData(campaigns, function(response) {
-    return res.send(response);
+    return res.status(200).send(response);
   })
 }
 

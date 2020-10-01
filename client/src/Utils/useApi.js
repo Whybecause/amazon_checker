@@ -1,19 +1,28 @@
 import React from 'react';
 import axios from 'axios';
 
+
+export const getAllCampaigns = () => {
+  fetch("/api/campaigns/all")
+  .then( (response) => {
+    return response.json()
+    });
+}
 export const apiStates = {
     LOADING: 'LOADING',
     SUCCESS: 'SUCCESS',
     ERROR: 'ERROR',
   };
   
-  export const useApi = (url, campaignState) => {
+  export const useCampaigns = (url, emptyList) => {
     const [data, setData] = React.useState({
       state: apiStates.LOADING,
       error: '',
       data: [],
     });
   
+
+
     const setPartData = (partialData) => setData({ ...data, ...partialData });
   
     React.useEffect(() => {
@@ -34,9 +43,9 @@ export const apiStates = {
             error: 'fetch failed'
           });
         });
-    }, [campaignState]);
+    }, [emptyList]);
   
-    return data;
+    return (data) ;
   };
 
   export const patchCampaignState = async (
@@ -68,3 +77,4 @@ export const apiStates = {
         console.log(e);
       });
   };
+

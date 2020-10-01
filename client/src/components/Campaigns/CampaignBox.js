@@ -1,79 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container, Table } from "react-bootstrap";
-import { apiStates, useApi, patchCampaignState } from "../../Utils/useApi";
+import { useCampaigns } from "./useCampaigns";
+
 import Campaign from "./Campaign";
-import axios from 'axios';
 
-// Component is used in Wrapper to render different pages (all campaigns, problematic campaigns)
-const CampaignBox = (props) => {
-  const [ campaignState, setCampaignState ] = useState();
-  const { state, error, data } = useApi(props.url, campaignState);
-  const [toggleLoading, setToggleLoading] = useState(false);
+const CampaignBox = () => {
+  const { campaigns, message, error, isPending, markAsActive, fetchProblematicCampaigns, refetchCampaigns } = useCampaigns();
 
-  
-  // Function makes PATCH request to update Campaign State in DB
-  const toggleState = (event, id) => {
-    let url = `/api/state/${id}`
-    patchCampaignState(event, url, setToggleLoading, data, setCampaignState);
-  }
+  return (
+    <React.Fragment>
+      <Container>
+      <button className="btn btn-success" onClick={ () => refetchCampaigns()}>All Campaigns</button>
+      <button className="btn btn-danger" onClick={ () => fetchProblematicCampaigns()}>Problems</button>
+      {error && <pre>ERROR! {error}</pre>}
+      {message && <pre>{message}</pre>}
+      {isPending && <div className="spinner-svg">LOADING...</div>}
 
-
-
-
-  const deleteCampaign = async (id) => {
-    try {
-      const result = await axios.delete(`/api/campaigns/${id}`)
-      setCampaignState(result)
-    } 
-    catch (e) {
-      console.log(e);
-    }
-
-  }
-
-  switch (state) {
-    case apiStates.ERROR:
-      return <p>ERROR: {error || "General error"}</p>;
-    case apiStates.SUCCESS:
-      return (
-        <React.Fragment>
-          <Container>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Campaign Name</th>
-                  <th>ASIN</th>
-                  <th>Campaign State</th>
-                  <th>Buybox</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.length &&
-                  data.map((campaign, index) => (
-                    <tr key={index}>
-                      <Campaign
-                      campaign={campaign}
-                        buybox={campaign.buybox}
-                        toggleLoading={toggleLoading}
-                        toggleState={toggleState}
-                        deleteCampaign={deleteCampaign}
-                      />
-                    </tr>
-                  ))}
-              </tbody>
-            </Table>
-            {data.message && <div>{data.message}</div>}
-          </Container>
-        </React.Fragment>
-      );
-    default:
-      return (
-        <Container>
-          <div className="spinner-svg"></div>
-        </Container>
-      );
-  }
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Campaign Name</th>
+              <th>ASIN</th>
+              <th>Campaign State</th>
+              <th>Buybox</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {campaigns ? (
+              campaigns.map((campaign, index) => (
+                <tr key={index}>
+                <Campaign
+                  campaign={campaign}
+                  markAsActive={markAsActive}
+                  />
+              </tr>
+              ))
+            ) : (
+              null
+            )}
+          </tbody>
+        </Table>
+        {campaigns.message && <div>{campaigns.message}</div>}
+      </Container>
+    </React.Fragment>
+  );
 };
 
 export default CampaignBox;

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Campaign = ({campaign, toggleState, toggleLoading, deleteCampaign}) => {
+const Campaign = ({campaign, markAsActive}) => {
   return (
     <>
       <td>
@@ -32,7 +32,7 @@ const Campaign = ({campaign, toggleState, toggleLoading, deleteCampaign}) => {
         )}
       </td>
       <td>
-        {campaign.state ? (
+        {/* {campaign.state ? (
           <button
             id={campaign.index}
             disabled={campaign.toggleLoading}
@@ -50,15 +50,17 @@ const Campaign = ({campaign, toggleState, toggleLoading, deleteCampaign}) => {
           >
             Activate
           </button>
-        )}
-
+        )} */}
+        {/* <button onClick={ () => updateCampaignState(campaign.id)}>Update</button>
+        
         <button
           id={campaign.id}
           onClick={() => deleteCampaign(campaign.id)}
           className="btn btn-danger"
         >
           Delete
-        </button>
+        </button> */}
+        <button onClick={ () => markAsActive(campaign.id)}>Update</button>
       </td>
       </>
   );

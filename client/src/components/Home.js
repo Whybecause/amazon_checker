@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Container, Table, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -63,7 +63,7 @@ function Home() {
   // DELETE CAMPAIGN WHEN CLICKING THE DELETE BUTTON
   const deleteCampaign = async (id) => {
     try {
-      const result = await axios.delete(`/api/campaigns/${id}`)
+      await axios.delete(`/api/campaigns/${id}`)
       getCampaigns(allCampaignsUrl);
     } 
     catch (e) {
