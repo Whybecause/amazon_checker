@@ -1,6 +1,6 @@
 import React from "react";
 
-const Campaign = ({campaign, markAsActive}) => {
+const Campaign = ({campaign, markAsActive, removeCampaign, isLoading}) => {
   return (
     <>
       <td>
@@ -31,36 +31,33 @@ const Campaign = ({campaign, markAsActive}) => {
           </span>
         )}
       </td>
-      <td>
-        {/* {campaign.state ? (
+      <td className="c-flex1">
+        {campaign.state ? (
           <button
-            id={campaign.index}
-            disabled={campaign.toggleLoading}
-            onClick={(event) => toggleState(event, campaign.id)}
-            className="btn btn-secondary"
+            onClick={ () => markAsActive(campaign.id)}
+            disabled={isLoading}
+            className="btn btn-light w-50"
           >
             Stop
           </button>
         ) : (
           <button
-            id={campaign.index}
-            disabled={campaign.toggleLoading}
-            onClick={(event) => toggleState(event, campaign.id)}
-            className="btn btn-success"
+            onClick={ () => markAsActive(campaign.id)}
+            disabled={isLoading}
+            className="btn btn-secondary w-50"
           >
             Activate
           </button>
-        )} */}
-        {/* <button onClick={ () => updateCampaignState(campaign.id)}>Update</button>
-        
+        )}
+       
         <button
           id={campaign.id}
-          onClick={() => deleteCampaign(campaign.id)}
-          className="btn btn-danger"
+          disabled={isLoading}
+          onClick={() => removeCampaign(campaign.id)}
+          className="btn btn-danger w-20"
         >
-          Delete
-        </button> */}
-        <button onClick={ () => markAsActive(campaign.id)}>Update</button>
+          X
+        </button>
       </td>
       </>
   );

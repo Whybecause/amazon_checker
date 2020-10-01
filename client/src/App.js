@@ -1,20 +1,18 @@
 import React from 'react';
 import { BrowserRouter, Switch } from "react-router-dom";
-import Nav from './components/Nav';
+import NavMenu from './components/NavMenu';
 import Home from './components/Home';
 import CampaignBox from './components/Campaigns/CampaignBox';
-import AllCampaignsWrapper from './components/Campaigns/Wrapper/AllCampaignsWrapper';
-import ProblemCampaignsWrapper from './components/Campaigns/Wrapper/ProblemCampaignsWrapper';
+import AllCampaigns from './components/Campaigns/AllCampaigns';
+import ProblemCampaigns from './components/Campaigns/ProblemCampaigns';
 
 function App() {
   return (
     <BrowserRouter>
-      <Nav component={Nav}/>
+      <NavMenu component={NavMenu}/>
     <Switch>
-      {/* <Home exact path="/" component={Home} /> */}
-      {/* <AllCampaignsWrapper exact path="/campaigns/all" component={AllCampaignsWrapper} />
-      <ProblemCampaignsWrapper exact path="/campaigns/problem" component={ProblemCampaignsWrapper} /> */}
-      <CampaignBox exact path="/campaigns/all" component={CampaignBox} />
+      <AllCampaigns exact path="/campaigns/all" component={AllCampaigns} />
+      <ProblemCampaigns exact path="/campaigns/problem" component={ProblemCampaigns} />
     </Switch>
     </BrowserRouter>
   );

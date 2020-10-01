@@ -1,47 +1,45 @@
 import React from "react";
-import { Container, Table } from "react-bootstrap";
-import { useCampaigns } from "./useCampaigns";
+import { Container } from "react-bootstrap";
+import CampaignList from "./CampaignList";
+import CampaignForm from "./CampaignForm";
+const CampaignBox = ({
+  campaigns,
+  message,
+  error,
+  isPending,
+  markAsActive,
+  createCampaign,
+  removeCampaign,
+  isLoading
+}) => {
+  let [toggleForm, setToggleForm ] = React.useState(false);
 
-import Campaign from "./Campaign";
-
-const CampaignBox = () => {
-  const { campaigns, message, error, isPending, markAsActive, fetchProblematicCampaigns, refetchCampaigns } = useCampaigns();
-
+  const toggle = () => {
+    toggleForm = !toggleForm;
+    setToggleForm(toggleForm);
+  }
   return (
     <React.Fragment>
       <Container>
-      <button className="btn btn-success" onClick={ () => refetchCampaigns()}>All Campaigns</button>
-      <button className="btn btn-danger" onClick={ () => fetchProblematicCampaigns()}>Problems</button>
-      {error && <pre>ERROR! {error}</pre>}
-      {message && <pre>{message}</pre>}
-      {isPending && <div className="spinner-svg">LOADING...</div>}
+        <div className="campaign-nav">
+          <div className="campaign-nav-btn">
 
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Campaign Name</th>
-              <th>ASIN</th>
-              <th>Campaign State</th>
-              <th>Buybox</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {campaigns ? (
-              campaigns.map((campaign, index) => (
-                <tr key={index}>
-                <Campaign
-                  campaign={campaign}
-                  markAsActive={markAsActive}
-                  />
-              </tr>
-              ))
-            ) : (
-              null
-            )}
-          </tbody>
-        </Table>
-        {campaigns.message && <div>{campaigns.message}</div>}
+        <a className="btn btn-light" href="/campaigns/all">All Campaigns</a>
+        <a className="btn btn-light" href="/campaigns/problem">Problems</a>
+        <button className="btn btn-warning" onClick={toggle}>Add Campaign</button>
+        {isPending && <div className="spinner-svg"></div>}
+          </div>
+          <div className="campaign-nav-form">
+        {toggleForm &&<CampaignForm createCampaign={createCampaign}/>}
+          </div>
+        </div>
+        {error && <pre>{error}</pre>}
+        {message ? ( <div className="m-top-3 text-center">{message}</div> ) : ( null)}
+        {campaigns.length ? (
+          <CampaignList campaigns={campaigns} markAsActive={markAsActive} removeCampaign={removeCampaign} isLoading={isLoading}/>
+        ) : (
+          null
+        )}
       </Container>
     </React.Fragment>
   );

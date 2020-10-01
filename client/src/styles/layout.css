@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.c-flex1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.m-top-3 {
+  margin-top: 3rem;
+}
+
+.campaign-nav {
+  display: flex;
+  width: 100%;
+}
+
+.campaign-nav-btn {
+  width: 35%;
+}
+
+.campaign-nav-form {
+  width: 65%;
+}
+

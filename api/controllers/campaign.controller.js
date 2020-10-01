@@ -228,9 +228,9 @@ exports.toogleCampaignState = async (req, res) => {
 exports.deleteCampaign = async (req, res) => {
   const campaignId = req.params.id;
   try {
-    const deletedCampaign = await Campaign.deleteOne({ _id: campaignId });
-    const allCampaigns = await Campaign.find();
-    return res.status(200).json({ message: "Campaign deleted!", campaigns: allCampaigns });
+    const deletedCampaign = await Campaign.findOne({_id: campaignId});
+    const result = await Campaign.deleteOne({ _id: campaignId });
+    return res.status(200).json({ message: "Campaign deleted!",  id: deletedCampaign.id, campaignName: deletedCampaign.campaignName, asin: deletedCampaign.asin, state: deletedCampaign.state, buybox: deletedCampaign.buybox  });
   } catch (error) {
     return res.status(500).send({ error: error });
   }
