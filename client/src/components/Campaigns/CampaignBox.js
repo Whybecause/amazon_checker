@@ -1,14 +1,14 @@
 import React from "react";
 import { useCampaigns } from "../../hooks/useCampaigns";
+import { useGetUpdateBuyboxTime } from "../../hooks/useBuybox";
+import  useUserInput  from '../../hooks/useUserInput';
+import  useSearchable  from '../../hooks/useSearchable';
 import { Container } from "react-bootstrap";
 import CampaignList from "./CampaignList";
 import CampaignForm from "./CampaignForm";
-import { useBuybox } from "../../hooks/useBuybox";
-
 const CampaignBox = () => {
-  const [url, setUrl] = React.useState("/api/campaigns/all");
-  const [showBuyboxBtn, setBuyboxBtn] = React.useState(true);
-
+  const { lastUpdate, failUpdate } = useGetUpdateBuyboxTime();
+  const [url, setUrl] = React.useState("/api/campaigns/problem");
   const {
     campaigns,
     message,
@@ -19,20 +19,21 @@ const CampaignBox = () => {
     removeCampaign,
     isLoading,
   } = useCampaigns(url);
-  const {checkBuybox, buyboxMsg, isBuyboxBtnDisabled} = useBuybox(campaigns);
+  
+
+  const searchText = useUserInput("");
+  const searchableCampaigns = useSearchable(campaigns, searchText.value, (campaign) => [campaign.campaignName]);
   let [toggleForm, setToggleForm] = React.useState(false);
 
   // All Campaigns Button
   const sortAllCampaigns = (event) => {
     event.preventDefault();
     setUrl("/api/campaigns/all");
-    setBuyboxBtn(true);
   };
   // Problem Campaigns Button
   const sortProblemCampaigns = (event) => {
     event.preventDefault();
     setUrl("/api/campaigns/problem");
-    setBuyboxBtn(false);
   };
   // Add Campaign Button
   const toggle = () => {
@@ -45,7 +46,7 @@ const CampaignBox = () => {
       <Container>
         {/* BUTTONS ----------------------- */}
         <div className="nav-container">
-          <div className="nav-campaigns">
+          <div className="nav-btns">
             <button
               className="btn btn-light"
               onClick={(event) => sortAllCampaigns(event)}
@@ -61,18 +62,12 @@ const CampaignBox = () => {
             <button className="btn btn-warning" onClick={toggle}>
               Add Campaign
             </button>
+          <input placeholder="Search by Name"
+            type="text"
+            className="form-control text-center" 
+            {...searchText}
+            />
           </div>
-          {showBuyboxBtn && (
-            <div className="nav-buybox">
-              <button
-                onClick={checkBuybox}
-                disabled={isBuyboxBtnDisabled}
-                className="btn btn-danger"
-              >
-                Check Buybox
-              </button>
-            </div>
-          )}
         </div>
         <div className="campaign-nav-form">
           {toggleForm && (
@@ -80,25 +75,18 @@ const CampaignBox = () => {
               <CampaignForm createCampaign={createCampaign} />
             </div>
           )}
+          {lastUpdate && <div>Last Buybox Update : {lastUpdate}</div>}
+
         </div>
 
         {/* MESSAGES OR ERRORS---------------------- */}
         {isPending && <div className="spinner-svg"></div>}
         {error && <pre>{error}</pre>}
         {message ? <div className="m-top-3 text-center">{message}</div> : null}
-        <div>
-        {buyboxMsg && (
-          buyboxMsg.map( (bbMsg, index) => (
-            <p key={index}>{bbMsg}</p>
-            ))
-          )}
-        </div>
-
-
         {/* TABLE WITH CAMPAIGNS------------------------------ */}
-        {campaigns.length ? (
+        {searchableCampaigns  ? (
           <CampaignList
-            campaigns={campaigns}
+            searchableCampaigns={searchableCampaigns}
             markAsActive={markAsActive}
             removeCampaign={removeCampaign}
             isLoading={isLoading}

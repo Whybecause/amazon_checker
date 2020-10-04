@@ -25,20 +25,9 @@ code {
 
 .nav-container {
   display: flex;
-  flex-direction: row;
   width: 100%;
-  justify-content: space-around;
 }
 
-.nav-campaigns {
-  display: flex;
-  width: 70%;
-}
-.nav-buybox {
-  display: flex;
-  justify-content: space-evenly;
-  width: 30%;
-}
 
 .p-top-1 {
   padding-top: 1rem;

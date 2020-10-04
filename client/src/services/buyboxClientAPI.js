@@ -15,3 +15,15 @@ export const saveBuyboxInDb = async (campaign) => {
 
     return result.data;
 }
+
+export const saveUpdateBuyboxTime = async () => {
+  const result = await axios.patch("/api/newupdate")
+  return result.data;
+}
+
+export const getUpdateBuyboxTime = async () => {
+  const result = await axios.get("/api/lastupdate")
+  console.log(result.data.update);
+  return result.data.update;
+}
+

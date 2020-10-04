@@ -1,9 +1,7 @@
 const Campaign = require("../models/campaign.model");
+const Update = require("../models/buyboxUpdateTime.model");
 const puppeteer = require("puppeteer");
 
-// MAJ .env if error on URL :
-const uri1 = process.env.uri1;
-const uri2 = process.env.uri2;
 const uri = process.env.uri;
 
 let user_agent = [
@@ -110,74 +108,6 @@ exports.getBuyBox = async (req, res) => {
   };
 
 
-
-// FRONT SIDE MAKE REQUEST TO GET BUYBOX + PATCH UPDATEBUYBOX IN DB WHEN CLICKING BUTTON
-// GET
-// exports.getBuyBox = async (req, res) => {
-//   try {
-
-//     const campaigns = await Campaign.find();
-//     if (campaigns.length) {
-//       let updated = [];
-//       let noChange= [];
-//       for (let i = 0; i < campaigns.length; i++) {
-//         const browser = await puppeteer.launch({
-//           headless: true,
-//           args: [
-//             "--no-sandbox",
-//             "--disable-setuid-sandbox",
-//             "--window-size=1920,1080",
-//             `--user-agent=${user_agent[random_number]}`,
-//           ],
-//         });
-        
-//         const page = await browser.newPage();
-//         await page.setDefaultNavigationTimeout(600000);
-//         // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
-//         await page.setRequestInterception(true);
-//         page.on('request', (req) => {
-//           if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
-//             req.abort();
-//           } else {
-//             req.continue();
-//           }
-//         });
-//         // ---------------
-//         await page.goto(uri + campaigns[i].asin);
-//         await page.waitForSelector("body");
-        
-//         const buybox = await page.evaluate(() => {
-//           let vendor = document.body.querySelector("#merchant-info").innerText;
-//           const regex = "Amazon";
-//           let buyboxState = vendor.match(regex);
-//           if (buyboxState !== null) {
-//             buyboxState = true;
-//           } else {
-//             buyboxState = false;
-//           }
-//           return buyboxState;
-//         });
-//         console.log(campaigns[i].asin + buybox);
-        
-//         if (buybox !== campaigns[i].buybox) {
-//           updated.push({id: campaigns[i].id, asin: campaigns[i].asin, state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
-          
-//         } else {
-//           noChange.push({id: campaigns[i].id, asin: campaigns[i].asin,  state: campaigns[i].state, oldbuybox: campaigns[i].buybox, newbuybox: buybox})
-//         }
-//         await browser.close();
-//       }
-      
-//       return res.send({updated: updated, noChange: noChange});
-      
-//     } else {
-//       return res.status(404).send({ error: "No campaign added yet" });
-//     }
-//   } catch(e) {
-//     return console.log(e);
-//   }
-//   };
-  
   // PATCH
 exports.updateBuyBoxInDb = async (req, res) => {
     const campaignId = req.params.id;
@@ -186,26 +116,52 @@ exports.updateBuyBoxInDb = async (req, res) => {
     campaign.buybox = newbuybox;
     try {
         campaign.save();
-        return res.send({message: campaign.asin + ':' + ' ' + 'Buybox Updated for' })
+        return res.send({message: campaign.asin + ':' + ' ' + 'Buybox Updated' })
       } catch(e) {
           return console.log(e);
       }
 }
 
+exports.getUpdateTime = async (req, res) => {
+  const result = await Update.findOne({ name : "buyboxUpdate"})
+  try {
+    return res.status(200).send({update: result.lastUpdate})
+  } catch(e) {
+    return res.send(e);
+  }
+}
+
+exports.patchUpdateTime = async (req, res) => {
+  await Update.findOne({name: "buyboxUpdate"})
+  .then( (foundUpdate) => {
+    foundUpdate.lastUpdate = Date.now();
+    foundUpdate.save();
+    return res.status(200).send('New buybox update time saved');
+  })
+  .catch( (error) => {
+    return console.log(error);
+  })
+}
+
 // GET
 exports.getAllCampaigns = async (req, res) => {
-    const campaigns = await Campaign.find();
-      getAllData(campaigns, function (response) {
-        return res.status(200).send(response);
-      });
+  await Campaign.find()
+  .sort({"createdAt": -1})
+  .then( (campaigns) => {
+    getAllData(campaigns, function(response) {
+      return res.status(200).send(response);
+    })
+  })
  };
 
 // GET
 exports.getProblematicCampaigns = async (req, res) => {
-  const campaigns = await Campaign.find();
-  // Function map on campaigns :
-  getProblematicData(campaigns, function(response) {
-    return res.status(200).send(response);
+  await Campaign.find()
+  .sort({"createdAt": -1})
+  .then( (campaigns) => {
+    getProblematicData(campaigns, function(response) {
+      return res.status(200).send(response);
+    })
   })
 }
 
@@ -277,7 +233,7 @@ getProblematicData = async (campaigns, callback) =>  {
       if (problematic.length) {
           return callback(problematic);
       } else {
-          return callback({message: 'Nothing to worry'});
+          return callback({message: 'Nothing to worry 😊'});
       }
   } else {
       return callback({ message: 'No Campaign Added Yet'});

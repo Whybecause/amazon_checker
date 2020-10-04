@@ -1,14 +1,16 @@
 import React from "react";
-import { fetchBuybox, saveBuyboxInDb } from '../services/buyboxClientAPI';
+import { fetchBuybox, saveBuyboxInDb, saveUpdateBuyboxTime, getUpdateBuyboxTime } from '../services/buyboxClientAPI';
+import useSWR from "swr";
 
 export const useBuybox = (campaigns) => {
   const [buyboxMsg, setBuyboxMsg] = React.useState("");
-  const [ isBuyboxBtnDisabled, setBuyboxBtnDisabled ] = React.useState(false);
+  const [buyboxMsgSuccess, setBuyboxMsgSuccess] = React.useState("");
+  const [ buyboxLoading, setBuyboxLoading ] = React.useState(false);
   const patchBuybox = (campaign) => {
     if (campaign.updated.length) {
       saveBuyboxInDb(campaign)
       .then( (success) => {
-        setBuyboxMsg(oldArray => [...oldArray, success.message]);
+        setBuyboxMsgSuccess(oldArray => [...oldArray, success.message]);
 
       })
       .catch( (error) => {
@@ -18,24 +20,37 @@ export const useBuybox = (campaigns) => {
       setBuyboxMsg(oldArray => [...oldArray, campaign.noChange[0].asin + ':' + ' ' + 'No Change']);
     }
   }
-  const checkBuybox = async () => {
-    setBuyboxBtnDisabled(true)
-    if (!campaigns.length) {
-      setBuyboxBtnDisabled(false)
-      return console.log("No campaigns");
-    }
-    await campaigns.map((campaign) => {
+    const checkBuybox = async () => {
+
+      setBuyboxLoading(true)
+      if (!campaigns.length) {
+        setBuyboxLoading(false)
+        return console.log("No campaigns");
+      }
+      await campaigns.map((campaign) => {
         fetchBuybox(campaign)
         .then(patchBuybox)
-        .then(res => setBuyboxBtnDisabled(false))
+        .then( (res) => {
+          setBuyboxLoading(false)
+          saveUpdateBuyboxTime();
+        })
         .catch( (error) => {
           setBuyboxMsg(oldArray => [...oldArray, error + 'Error checking Buybox']);
         })   
-    })
-  };
+      })
+    };
   return {
     checkBuybox,
     buyboxMsg,
-    isBuyboxBtnDisabled
+    buyboxMsgSuccess,
+    buyboxLoading,    
   };
 };
+
+
+export const useGetUpdateBuyboxTime = () => {
+    const { data, error } = useSWR('update', getUpdateBuyboxTime );
+    const lastUpdate = data;
+    const failUpdate = error
+    return { lastUpdate, failUpdate}
+}
