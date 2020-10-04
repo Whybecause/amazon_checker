@@ -28,3 +28,4 @@ function httpResponseToJSON(response) {
   }
   return response.json();
 }
+

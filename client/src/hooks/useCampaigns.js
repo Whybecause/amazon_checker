@@ -3,10 +3,11 @@ import {
   postCampaign,
   getAllCampaigns,
   patchCampaignStatus,
-  deleteCampaign
+  deleteCampaign,
 } from "../services/campaignClientAPI";
 
 import React from 'react';
+
 
 const useFetchedCampaigns = (url) => {
   const { data, error, mutate } = useSWR(url, getAllCampaigns);
@@ -14,6 +15,7 @@ const useFetchedCampaigns = (url) => {
   const isPending = !data;
   const setCampaigns = mutate;
   const message = campaigns.message || [];
+  
   return { campaigns, setCampaigns, error, isPending, message };
 };
 
@@ -80,6 +82,6 @@ export const useCampaigns = (url) => {
     markAsActive,
     createCampaign,
     removeCampaign,
-    isLoading
+    isLoading,
   };
 };

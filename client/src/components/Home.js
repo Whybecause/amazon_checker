@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Table, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -38,9 +38,9 @@ function Home() {
     }
   }
 
-  // useEffect( () => {
-  //   getCampaigns(allCampaignsUrl);
-  // }, []);
+  useEffect( () => {
+    getCampaigns(allCampaignsUrl);
+  }, []);
 
   // CHANGE CAMPAIGN STATE WHEN CLICK BUTTON
   const toggleState = async (event, id) => {

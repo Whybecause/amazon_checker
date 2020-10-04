@@ -186,7 +186,7 @@ exports.updateBuyBoxInDb = async (req, res) => {
     campaign.buybox = newbuybox;
     try {
         campaign.save();
-        return res.send({message: 'Buybox Updated for' + campaign.asin})
+        return res.send({message: campaign.asin + ':' + ' ' + 'Buybox Updated for' })
       } catch(e) {
           return console.log(e);
       }

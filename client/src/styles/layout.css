@@ -1,14 +1,14 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -23,16 +23,23 @@ code {
   margin-top: 3rem;
 }
 
-.campaign-nav {
+.nav-container {
   display: flex;
+  flex-direction: row;
   width: 100%;
+  justify-content: space-around;
 }
 
-.campaign-nav-btn {
-  width: 35%;
+.nav-campaigns {
+  display: flex;
+  width: 70%;
+}
+.nav-buybox {
+  display: flex;
+  justify-content: space-evenly;
+  width: 30%;
 }
 
-.campaign-nav-form {
-  width: 65%;
+.p-top-1 {
+  padding-top: 1rem;
 }
-
