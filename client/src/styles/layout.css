@@ -23,12 +23,25 @@ code {
   margin-top: 3rem;
 }
 
-.nav-container {
-  display: flex;
-  width: 100%;
-}
 
 
 .p-top-1 {
   padding-top: 1rem;
+}
+.m-top-1 {
+  margin-top: 1rem;
+}
+
+.c-p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sm-padding {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.c-btn {
 }

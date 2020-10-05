@@ -1,11 +1,15 @@
 import React from "react";
+import { Container, Col, Row } from "react-bootstrap";
+import format from 'date-fns/format';
+
 import { useCampaigns } from "../../hooks/useCampaigns";
 import { useGetUpdateBuyboxTime } from "../../hooks/useBuybox";
 import  useUserInput  from '../../hooks/useUserInput';
 import  useSearchable  from '../../hooks/useSearchable';
-import { Container } from "react-bootstrap";
+
 import CampaignList from "./CampaignList";
 import CampaignForm from "./CampaignForm";
+
 const CampaignBox = () => {
   const { lastUpdate, failUpdate } = useGetUpdateBuyboxTime();
   const [url, setUrl] = React.useState("/api/campaigns/problem");
@@ -19,11 +23,10 @@ const CampaignBox = () => {
     removeCampaign,
     isLoading,
   } = useCampaigns(url);
-  
-
   const searchText = useUserInput("");
   const searchableCampaigns = useSearchable(campaigns, searchText.value, (campaign) => [campaign.campaignName]);
   let [toggleForm, setToggleForm] = React.useState(false);
+
 
   // All Campaigns Button
   const sortAllCampaigns = (event) => {
@@ -45,38 +48,40 @@ const CampaignBox = () => {
     <React.Fragment>
       <Container>
         {/* BUTTONS ----------------------- */}
-        <div className="nav-container">
-          <div className="nav-btns">
-            <button
-              className="btn btn-light"
-              onClick={(event) => sortAllCampaigns(event)}
-            >
-              All Campaigns
-            </button>
-            <button
-              className="btn btn-light"
-              onClick={(event) => sortProblemCampaigns(event)}
-            >
-              Problem Campaigns
-            </button>
-            <button className="btn btn-warning" onClick={toggle}>
-              Add Campaign
-            </button>
-          <input placeholder="Search by Name"
-            type="text"
-            className="form-control text-center" 
-            {...searchText}
-            />
-          </div>
-        </div>
+        {lastUpdate && <div className="c-p text-center">Last Buybox Update : {Date(lastUpdate)}</div>}
+
+        <Row className="campaigns-nav-container">
+              <Col lg={6} md={12} xs={12} className="sm-padding">
+                    <button
+                      className="c-btn"
+                      onClick={(event) => sortProblemCampaigns(event)}
+                    >
+                      Problem Campaigns
+                    </button>
+                    <button
+                      className="c-btn"
+                      onClick={(event) => sortAllCampaigns(event)}
+                    >
+                      All Campaigns
+                    </button>
+                    <button className="c-btn" onClick={toggle}>
+                      Add Campaign
+                    </button>
+              </Col>
+              <Col lg={6} className="sm-padding">
+                  <input placeholder="Search by Name"
+                    type="text"
+                    className="form-control text-center" 
+                    {...searchText}
+                    />
+              </Col>
+        </Row>
         <div className="campaign-nav-form">
           {toggleForm && (
             <div className="p-top-1">
               <CampaignForm createCampaign={createCampaign} />
             </div>
           )}
-          {lastUpdate && <div>Last Buybox Update : {lastUpdate}</div>}
-
         </div>
 
         {/* MESSAGES OR ERRORS---------------------- */}
