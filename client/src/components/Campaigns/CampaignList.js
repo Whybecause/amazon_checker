@@ -1,13 +1,13 @@
 import React from "react";
-import { Table, Row } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import Campaign from "./Campaign";
 
 
-const CampaignList = ({searchableCampaigns, markAsActive, removeCampaign, isLoading}) => {
+const CampaignList = ({searchableCampaigns, markAsActive, removeCampaign, isLoading, showModal, handleShowModal, handleCloseModal}) => {
     return (
           <>
           <div>{searchableCampaigns.length} results </div>
-        <Table striped bordered hover>
+        <Table striped bordered hover variant="dark" responsive="sm">
         <thead>
           <tr>
             <th>Campaign Name</th>
@@ -25,6 +25,9 @@ const CampaignList = ({searchableCampaigns, markAsActive, removeCampaign, isLoad
                 markAsActive={markAsActive}
                 removeCampaign={removeCampaign}
                 isLoading={isLoading}
+                showModal={showModal}
+                handleShowModal={handleShowModal}
+                handleCloseModal={handleCloseModal}
                 />
             </tr>
             ))}

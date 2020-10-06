@@ -1,8 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Switch, Redirect } from "react-router-dom";
+
 import NavMenu from './components/NavMenu';
-import CampaignBox from './components/Campaigns/CampaignBox';
+import CampaignBox from './components/CampaignBox';
 import Buybox from './components/Buybox';
+
 function App() {
   return (
     <BrowserRouter>

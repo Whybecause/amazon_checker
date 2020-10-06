@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const postCampaign = async (data) => {
   const result = await axios.post("/api/campaigns", data);
   return result;
-}
+};
 
 export const getAllCampaigns = async (url) => {
-  return fetch(url).then(response => httpResponseToJSON(response));
+  return fetch(url).then((response) => httpResponseToJSON(response));
 };
 
 export const patchCampaignStatus = (id) => {
@@ -17,10 +17,8 @@ export const patchCampaignStatus = (id) => {
 };
 
 export const deleteCampaign = (id) => {
-   return axios.delete(`/api/campaigns/${id}`)
-    .then( response => response.data);
-  
-}
+  return axios.delete(`/api/campaigns/${id}`).then((response) => response.data);
+};
 
 function httpResponseToJSON(response) {
   if (response.status !== 200) {
@@ -28,4 +26,3 @@ function httpResponseToJSON(response) {
   }
   return response.json();
 }
-

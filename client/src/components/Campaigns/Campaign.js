@@ -1,6 +1,7 @@
 import React from "react";
+import ModalComponent from '../Modal';
 
-const Campaign = ({campaign, markAsActive, removeCampaign, isLoading}) => {
+const Campaign = ({campaign, markAsActive, removeCampaign, isLoading, showModal, handleShowModal, handleCloseModal}) => {
   return (
     <>
       <td>
@@ -36,7 +37,7 @@ const Campaign = ({campaign, markAsActive, removeCampaign, isLoading}) => {
           <button
             onClick={ () => markAsActive(campaign.id)}
             disabled={isLoading}
-            className="btn btn-light w-50"
+            className="btn btn-light tex-margin "
           >
             Stop
           </button>
@@ -44,7 +45,7 @@ const Campaign = ({campaign, markAsActive, removeCampaign, isLoading}) => {
           <button
             onClick={ () => markAsActive(campaign.id)}
             disabled={isLoading}
-            className="btn btn-secondary w-50"
+            className="btn btn-secondary tex-margin "
           >
             Activate
           </button>
@@ -52,12 +53,18 @@ const Campaign = ({campaign, markAsActive, removeCampaign, isLoading}) => {
        
         <button
           id={campaign.id}
-          disabled={isLoading}
-          onClick={() => removeCampaign(campaign.id)}
+          onClick={handleShowModal}
           className="btn btn-danger w-20"
         >
           X
         </button>
+        <ModalComponent
+        showModal={showModal} 
+        handleCloseModal={handleCloseModal}
+        onClickFunction={() => removeCampaign(campaign.id)}
+        modalHeader='Are you sure?'
+        modalBody={campaign.asin}
+        />
       </td>
       </>
   );

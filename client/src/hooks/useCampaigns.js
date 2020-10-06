@@ -19,7 +19,7 @@ const useFetchedCampaigns = (url) => {
   return { campaigns, setCampaigns, error, isPending, message };
 };
 
-export const useCampaigns = (url) => {
+export const useCampaigns = (url, handleCloseModal) => {
   const {
     campaigns,
     error,
@@ -28,7 +28,8 @@ export const useCampaigns = (url) => {
     message,
   } = useFetchedCampaigns(url);
   const [ isLoading, setIsLoading ] = React.useState(false);
-
+  const showSpinner = () => setIsLoading(true);
+  const hideSpinner = () => setIsLoading(false);
 
   const updateCampaign = (campaign) => {
     const index = campaigns.findIndex((g) => g.id === campaign.id);
@@ -45,17 +46,17 @@ export const useCampaigns = (url) => {
     }
   };
 
-  const createCampaign = (data) => {
-    setIsLoading(true);
+  const createCampaign = (data, e) => {
+    showSpinner();
     postCampaign(data)
     .then( (response) => {
       setCampaigns(response);
-      setIsLoading(false);
-
+      hideSpinner();
+      e.target.reset();
     })
     .catch( (error) => {
-      setIsLoading(false);
       console.log(error);
+      hideSpinner();
     })
   }
 
@@ -66,11 +67,10 @@ export const useCampaigns = (url) => {
   };
 
   const removeCampaign = (id) => {
-    setIsLoading(true);
     deleteCampaign(id)
     .then((campaign) => {
       updateCampaign(campaign);
-      setIsLoading(false);
+      handleCloseModal();
     })
     .catch(error => console.log(error));
   }
