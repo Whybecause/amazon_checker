@@ -9,11 +9,10 @@ import useSWR from "swr";
 import moment from "moment";
 
 export const useBuybox = (campaigns) => {
-  const controller = new AbortController();
-  const signal = controller.signal;
   const [buyboxMsg, setBuyboxMsg] = React.useState("");
   const [buyboxMsgSuccess, setBuyboxMsgSuccess] = React.useState("");
   const [buyboxLoading, setBuyboxLoading] = React.useState(false);
+
   const patchBuybox = (campaign) => {
     if (campaign.updated.length) {
       saveBuyboxInDb(campaign)
@@ -29,7 +28,7 @@ export const useBuybox = (campaigns) => {
     } else {
       setBuyboxMsg((oldArray) => [
         ...oldArray,
-        campaign.noChange[0].asin + ":" + " " + "No Change",
+        campaign.noChange[0].asin + "No Change",
       ]);
     }
   };
@@ -40,7 +39,7 @@ export const useBuybox = (campaigns) => {
       return console.log("No campaigns");
     }
     await campaigns.map((campaign) => {
-      fetchBuybox(campaign, { signal })
+      fetchBuybox(campaign)
         .then(patchBuybox)
         .then((res) => {
           setBuyboxLoading(false);
@@ -55,7 +54,6 @@ export const useBuybox = (campaigns) => {
     });
   };
   return {
-    controller,
     checkBuybox,
     buyboxMsg,
     buyboxMsgSuccess,

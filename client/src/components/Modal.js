@@ -10,7 +10,7 @@ const ModalComponent = ({showModal, modalHeader, modalBody, handleCloseModal, on
         <Modal.Body>{modalBody}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
-            Close
+            Cancel
           </Button>
           <Button variant="primary" onClick={onClickFunction}>
             Confirm

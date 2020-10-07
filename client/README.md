@@ -66,3 +66,19 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+
+Features : 
+JWT stored in cookies
+GET all campaigns created
+GET problematic campaigns (state campaign different than buybox statee)
+Create new campaign
+Update campaign state
+DELETE campaign with modal confirmation
+Search Form to filter campaigns by name (client side)
+Check Buybox : functions takes each ASIN from the campaign added and check on Amazon page if Amazon got the buybox. If the buybox owner is Amazon = state green. Else = state red. If state is different than the one found on amazon, the function update the buybox state in the database. Else, it returns infos on campaigns unchanged.
+Main page: info on last update time (last time the function updated a campaign in databse).
+
+POSSIBLE FEATURES EVOLUTION : 
+Add more filter options to search (buy asin)
+Add possibility to cancel the check buybox request / Or automatic cancel if we leave the page (coz it make take a while if there are many campaigns added)

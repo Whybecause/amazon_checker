@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const fetchBuybox = async (campaign, { signal }) => {
-  const result = await axios.get(`/api/buybox/${campaign.id}`, { signal });
+export const fetchBuybox = async (campaign) => {
+  const result = await axios.get(`/api/buybox/${campaign.id}`);
   return result.data;
 };
 

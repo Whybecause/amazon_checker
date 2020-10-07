@@ -7,18 +7,15 @@ let url = "/api/campaigns/all"
 
 const Buybox = () => {
     const {campaigns} = useCampaigns(url);
-    const {controller, checkBuybox, buyboxMsg, buyboxMsgSuccess, buyboxLoading} = useBuybox(campaigns);
-    const cancelRequest = () => {
-        controller.abort();
-    }
+    const {checkBuybox, buyboxMsg, buyboxMsgSuccess, buyboxLoading} = useBuybox(campaigns);
+
     React.useEffect(() => {
         checkBuybox()
     }, [campaigns]);
 
     return (
         <Container>
-            <button className="btn btn-warning" onClick={() => cancelRequest}>Cancel</button>
-            {buyboxLoading && <div className="spinner-svg"></div>}
+            {buyboxLoading && <div className="spinner-svg c-flex1"></div>}
             {buyboxMsg && (
                 <div className="text-center">
                     <p>{buyboxMsg.length} campaign unchanged</p>

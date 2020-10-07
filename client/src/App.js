@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Redirect } from "react-router-dom";
 import NavMenu from './components/NavMenu';
 import CampaignBox from './components/CampaignBox';
 import Buybox from './components/Buybox';
+import Login from './components/Login';
 
 function App() {
   return (
@@ -12,7 +13,8 @@ function App() {
     <Switch>
       <Redirect exact from= "/" to="/campaigns" />
       <CampaignBox exact path="/campaigns" component={CampaignBox} />
-      <Buybox exact path="/buybox" component={Buybox} />
+      <Login exact path="/login" component={Login} />
+      <Buybox exact path="/buybox" component={Buybox}/>
     </Switch>
     </BrowserRouter>
   );

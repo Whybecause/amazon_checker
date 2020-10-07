@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Col, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 import { useCampaigns } from "../hooks/useCampaigns";
 import { useGetUpdateBuyboxTime } from "../hooks/useBuybox";
@@ -12,7 +12,7 @@ import CampaignButtons from './Campaigns/CampaignButtons';
 
 const CampaignBox = () => {
   // GET UPDATE TIME
-  const {lastUpdate, errorTime } = useGetUpdateBuyboxTime();
+  const {lastUpdate } = useGetUpdateBuyboxTime();
 
   // DEFAULT URL = PROBLEM CAMPAIGNS
   const [url, setUrl] = React.useState("/api/campaigns/problem");
@@ -56,12 +56,11 @@ const CampaignBox = () => {
     setUrl("/api/campaigns/problem");
   };
 
+
   return (
     <React.Fragment>
       <Container>
-
         {lastUpdate && <div className="c-flex2 text-center p-discret"><strong>Last Buybox Update</strong>: {lastUpdate}</div>}
-
         {/* BUTTONS ----------------------- */}
         <CampaignButtons 
         sortProblemCampaigns={sortProblemCampaigns}
