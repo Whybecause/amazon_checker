@@ -21,16 +21,6 @@ app.use("/api", userRoutes);
 app.use("/api", campaignRoutes);
 app.use("/api", buyboxRoutes);
 
-// Pour Heroku : 
-if (process.env.NODE_ENV === "production") {
-    const appPath = path.join(__dirname, "client", "build");
-    app.use(express.static(appPath));
-  
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(appPath, "index.html"));
-    });
-  }
-
 mongoose.connect(process.env.MONGO_URI,
     {   
         useNewUrlParser: true,
@@ -41,6 +31,15 @@ mongoose.connect(process.env.MONGO_URI,
 .then(() => console.log('Connexion Mongodb réussie!'))
 .catch(() => console.log('Connexion Mongodb échouée!'))
 
+// Pour Heroku : 
+if (process.env.NODE_ENV === "production") {
+    const appPath = path.join(__dirname, "client", "build");
+    app.use(express.static(appPath));
+  
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(appPath, "index.html"));
+    });
+  }
 
 mongoose.connection.on('open', () => {
     app.listen(PORT, ip, () => {
