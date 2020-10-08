@@ -1,25 +1,11 @@
-import axios from "axios";
 import React from "react";
 import { Nav } from "react-bootstrap";
+import { getCurrentUser, logout }  from '../services/authService';
 
 function NavMenu() {
   const [currentUser, setCurrentUser] = React.useState(undefined);
-
-  const logout = async () => {
-    await axios.get("/api/logout");
-  };
-
-  const getCurrentUser = async () => {
-    const result = await axios.get("/api/user");
-    if (result.data !== undefined) {
-      setCurrentUser(result.data.id);
-    } else {
-      setCurrentUser(undefined);
-    }
-  };
-
   React.useEffect(() => {
-    getCurrentUser();
+    getCurrentUser(setCurrentUser);
   }, []);
 
   return (

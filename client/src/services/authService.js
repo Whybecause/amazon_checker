@@ -1,20 +1,19 @@
-import axios from 'axios';
+import axios from "axios";
 
-class AuthService {
-    login = async (data) => {
-        const result = await axios.post("/api/login", data)
-        return (result);
-    }
+export const login = async (data) => {
+  const result = await axios.post("/api/login", data);
+  return result;
+};
 
-    logout() {
-        localStorage.removeItem("user");
-        // window.location.reload();
-    }
+export const logout = async () => {
+  return axios.get("/api/logout");
+};
 
-    getCurrentUser() {
-        return JSON.parse(window.localStorage.getItem('user'));
-    }
-}
-
-export default new AuthService();
-
+export const getCurrentUser = async (setCurrentUser) => {
+  const result = await axios.get("/api/user");
+  if (result.data !== undefined) {
+    return setCurrentUser(result.data.id);
+  } else {
+    return setCurrentUser(undefined);
+  }
+};

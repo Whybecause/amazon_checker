@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter, Switch, Redirect } from "react-router-dom";
 
 import NavMenu from './components/NavMenu';
-import CampaignBox from './components/CampaignBox';
-import Buybox from './components/Buybox';
+import CampaignContainer from './components/Campaigns/CampaignContainer';
+import BuyboxContainer from './components/BuyboxContainer';
 import Login from './components/Login';
 
 function App() {
@@ -12,9 +12,9 @@ function App() {
       <NavMenu component={NavMenu}/>
     <Switch>
       <Redirect exact from= "/" to="/campaigns" />
-      <CampaignBox exact path="/campaigns" component={CampaignBox} />
+      <CampaignContainer exact path="/campaigns" component={CampaignContainer} />
       <Login exact path="/login" component={Login} />
-      <Buybox exact path="/buybox" component={Buybox}/>
+      <BuyboxContainer exact path="/buybox" component={BuyboxContainer}/>
     </Switch>
     </BrowserRouter>
   );

@@ -23,6 +23,5 @@ export const saveUpdateBuyboxTime = async () => {
 
 export const getUpdateBuyboxTime = async () => {
   const result = await axios.get("/api/lastupdate");
-  console.log(result.data.update);
   return result.data.update;
 };

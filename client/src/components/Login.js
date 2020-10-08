@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { Container } from 'react-bootstrap';
 import redirectTo from '../services/redirect';
-import AuthService from '../services/authService';
+import { login } from '../services/authService';
 
 function Login() {
     const { register, handleSubmit } = useForm();
@@ -13,11 +13,8 @@ function Login() {
 
     const onSubmit = (data) => {
         setLoading(true);
-        AuthService.login(data)
+        login(data)
         .then( (response) => {
-            if (response.data.token) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-            }
             setLoading(false);
             setRedirect(true);
             window.location.reload();

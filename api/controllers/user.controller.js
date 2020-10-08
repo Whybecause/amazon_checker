@@ -29,12 +29,7 @@ exports.login = async (req, res) => {
     for (let i = 0; i < user.roles.length; i++) {
       authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
     }
-    res.status(200).json({
-      id: user._id,
-      email: user.email,
-      token: token,
-      roles: authorities,
-    });
+    res.status(200).json();
   } catch (e) {
     res.status(401).json({ message: "Erreur" });
   }

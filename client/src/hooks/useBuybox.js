@@ -12,7 +12,7 @@ export const useBuybox = (campaigns) => {
   const [buyboxMsg, setBuyboxMsg] = React.useState("");
   const [buyboxMsgSuccess, setBuyboxMsgSuccess] = React.useState("");
   const [buyboxLoading, setBuyboxLoading] = React.useState(false);
-
+  const [ serverMsg, setServerMsg ] = React.useState(undefined);
   const patchBuybox = (campaign) => {
     if (campaign.updated.length) {
       saveBuyboxInDb(campaign)
@@ -34,9 +34,10 @@ export const useBuybox = (campaigns) => {
   };
   const checkBuybox = async () => {
     setBuyboxLoading(true);
+    setServerMsg(campaigns.message)
     if (!campaigns.length) {
       setBuyboxLoading(false);
-      return console.log("No campaigns");
+      return;
     }
     await campaigns.map((campaign) => {
       fetchBuybox(campaign)
@@ -52,12 +53,14 @@ export const useBuybox = (campaigns) => {
           ]);
         });
     });
+    
   };
   return {
     checkBuybox,
     buyboxMsg,
     buyboxMsgSuccess,
     buyboxLoading,
+    serverMsg
   };
 };
 
