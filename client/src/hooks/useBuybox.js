@@ -47,9 +47,10 @@ export const useBuybox = (campaigns) => {
           saveUpdateBuyboxTime();
         })
         .catch((error) => {
+          setBuyboxLoading(false);
           setBuyboxMsg((oldArray) => [
             ...oldArray,
-            error + "Error checking Buybox",
+            error + '' + "Error checking Buybox",
           ]);
         });
     });

@@ -33,7 +33,6 @@ const CampaignContainer = () => {
     removeCampaign,
     isLoading,
   } = useCampaigns(url, handleCloseModal);
-  
   // SEARCH BAR --------------
   const searchText = useUserInput("");
   const searchableCampaigns = useSearchable(campaigns, searchText.value, (campaign) => [campaign.campaignName]);
