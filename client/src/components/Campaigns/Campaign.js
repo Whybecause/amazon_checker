@@ -52,19 +52,21 @@ const Campaign = ({campaign, markAsActive, removeCampaign, isLoading, showModal,
         )}
        
         <button
-          id={campaign.id}
-          onClick={handleShowModal}
+          // id={campaign.id}
+          // onClick={handleShowModal}
+          onClick={() => removeCampaign(campaign.id)}
+
           className="btn btn-danger w-20"
         >
           X
         </button>
-        <ModalComponent
+        {/* <ModalComponent
         showModal={showModal} 
         handleCloseModal={handleCloseModal}
         onClickFunction={() => removeCampaign(campaign.id)}
         modalHeader='Are you sure?'
         modalBody={campaign.asin}
-        />
+        /> */}
       </td>
       </>
   );

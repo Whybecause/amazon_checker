@@ -53,6 +53,7 @@ export const useBuybox = (campaigns) => {
             error + "Error checking Buybox",
           ]);
         });
+        return campaign;
     });
     
   };

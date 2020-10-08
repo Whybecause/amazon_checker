@@ -5,18 +5,31 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require("path");
-const jwt = require ('jsonwebtoken');
-const cookies = require('cookies');
 
-const campaignRoutes = require('./routes/campaign.route');
+const ip = process.env.IP || '0.0.0.0';
+const PORT = process.env.PORT || 8080;
+
 const userRoutes = require('./routes/user.route');
+const campaignRoutes = require('./routes/campaign.route');
+const buyboxRoutes = require('./routes/buybox.route');
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended : true }));
 
-app.use("/api", campaignRoutes);
 app.use("/api", userRoutes);
+app.use("/api", campaignRoutes);
+app.use("/api", buyboxRoutes);
+
+// Pour Heroku : 
+if (process.env.NODE_ENV === "production") {
+    const appPath = path.join(__dirname, "client", "build");
+    app.use(express.static(appPath));
+  
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(appPath, "index.html"));
+    });
+  }
 
 mongoose.connect(process.env.MONGO_URI,
     {   
@@ -29,20 +42,9 @@ mongoose.connect(process.env.MONGO_URI,
 .catch(() => console.log('Connexion Mongodb échouée!'))
 
 
-// Pour Heroku : 
-if (process.env.NODE_ENV === "production") {
-  const appPath = path.join(__dirname, "client", "build");
-  app.use(express.static(appPath));
-
-  app.get("*", (req, res) => {
-      res.sendFile(path.resolve(appPath, "index.html"));
-  });
-}
-
-const PORT = process.env.PORT || 8080;
 mongoose.connection.on('open', () => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+    app.listen(PORT, ip, () => {
+        console.log(`Server running on port ${PORT}, ${ip}`);
     })
 })
 
