@@ -4,6 +4,7 @@ const controller = require('../controllers/campaign.controller');
 const authJwt = require('../middleware/authJwt');
 
 router.post('/campaigns', [authJwt.verifyToken], controller.createCampaign);
+router.get("/testbuybox", controller.testBuybox);
 router.get('/campaigns/problem', [authJwt.verifyToken], controller.getProblematicCampaigns);
 router.get('/campaigns/all', [authJwt.verifyToken], controller.getAllCampaigns);
 router.get('/buybox/:id', [authJwt.verifyToken], controller.getBuyBox);

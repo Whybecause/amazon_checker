@@ -239,3 +239,58 @@ getProblematicData = async (campaigns, callback) =>  {
       return callback({ message: 'No Campaign Added Yet'});
   }
 }
+
+
+
+exports.testBuybox = async (req, res) => {
+  try {
+      const asin = "B07NXJ56FX";
+      let updated = [];
+      let noChange= [];
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--window-size=1920,1080",
+            `--user-agent=${user_agent[random_number]}`,
+          ],
+        });
+        
+        const page = await browser.newPage();
+        await page.setDefaultNavigationTimeout(600000);
+        // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+          if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
+            req.abort();
+          } else {
+            req.continue();
+          }
+        });
+        // ---------------
+        await page.goto(uri + asin);
+        await page.waitForSelector("body");
+        
+        const buybox = await page.evaluate(() => {
+          let vendor = document.body.querySelector("#merchant-info").innerText;
+          const regex = "Amazon";
+          let buyboxState = vendor.match(regex);
+          if (buyboxState !== null) {
+            buyboxState = true;
+          } else {
+            buyboxState = false;
+          }
+          return buyboxState;
+        });
+        
+       
+        await browser.close();
+      
+      
+      return res.send({buybox: buybox});
+
+  } catch(e) {
+    return console.log(e);
+  }
+  };

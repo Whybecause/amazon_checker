@@ -50,7 +50,7 @@ export const useBuybox = (campaigns) => {
           setBuyboxLoading(false);
           setBuyboxMsg((oldArray) => [
             ...oldArray,
-            error + '' + "Error checking Buybox",
+            error + "Error checking Buybox",
           ]);
         });
     });

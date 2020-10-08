@@ -1,9 +1,15 @@
+import Axios from "axios";
 import React from "react";
 import { Nav } from "react-bootstrap";
 import { getCurrentUser, logout }  from '../services/authService';
 
 function NavMenu() {
   const [currentUser, setCurrentUser] = React.useState(undefined);
+
+  const testbuybox = async() => {
+    const result = await Axios.get("/api/testbuybox")
+    return console.log(result.data);
+  }
   React.useEffect(() => {
     getCurrentUser(setCurrentUser);
   }, []);
@@ -17,6 +23,11 @@ function NavMenu() {
         <Nav.Item>
           <Nav.Link eventKey="link-1" href="/buybox">
             Check Buybox
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-1" onClick={testbuybox}>
+            test Buybox
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
