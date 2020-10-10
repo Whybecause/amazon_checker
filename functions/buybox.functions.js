@@ -28,7 +28,7 @@ let user_agent = [
 let random_number = Math.floor(Math.random() * 20);
 const uri = process.env.uri;
 
-exports.searchBuybox = async (asin, campaign) => {
+exports.searchBuybox = async (asin) => {
     let updated = [];
     let noChange= [];
     const browser = await puppeteer.launch({
@@ -58,26 +58,20 @@ exports.searchBuybox = async (asin, campaign) => {
       
       const buybox = await page.evaluate(() => {
         let vendor = document.body.querySelector("#merchant-info").innerText;
-        const regex = "Amazon";
-        let buyboxState = vendor.match(regex);
-        if (buyboxState !== null) {
-          buyboxState = true;
-        } else {
-          buyboxState = false;
-        }
-        return buyboxState;
+        let buyboxState = vendor.match("Amazon");
+        return buyboxState !== null ? buyboxState = true : buyboxState = false
       });
-      console.log(asin + campaign.buybox + buybox);
+      // console.log(asin + campaign.buybox + buybox);
       
-      if (buybox !== campaign.buybox) {
-        updated.push({id: campaign.id, asin: campaign.asin, state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
+      // if (buybox !== campaign.buybox) {
+      //   updated.push({id: campaign.id, asin: campaign.asin, state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
         
-      } else {
-        noChange.push({id: campaign.id, asin: campaign.asin,  state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
-      }
+      // } else {
+      //   noChange.push({id: campaign.id, asin: campaign.asin,  state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
+      // }
       await browser.close();
     
     
-    return ({updated: updated, noChange: noChange});
-
+    // return ({updated: updated, noChange: noChange});
+      return buybox;
 }

@@ -42,9 +42,7 @@ if (process.env.NODE_ENV === "production") {
   }
 
 mongoose.connection.on('open', () => {
-    app.listen(PORT, ip, () => {
-        console.log(`Server running on port ${PORT}, ${ip}`);
-    })
+    app.listen(PORT, ip);
 })
 
    

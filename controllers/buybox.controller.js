@@ -4,12 +4,13 @@ const Campaign = require("../models/campaign.model");
 const { searchBuybox } = require('../functions/buybox.functions');
 
 exports.getBuyBox = async (req, res) => {
-    const campaignId = req.params.id;
-    const campaign = await Campaign.findById(campaignId);
-    const asin = campaign.asin;
-    searchBuybox(asin, campaign)
-    .then(result => res.send(result))
-    .catch(e => res.send(e));
+    const asin = req.params.id;
+    searchBuybox(asin)
+    .then( (foundBuybox) => {
+      console.log(foundBuybox);
+      res.send(foundBuybox)
+    })
+    .catch(e => res.send({message: 'Error getting Buybox'}));
 };
 
 
@@ -17,13 +18,12 @@ exports.getBuyBox = async (req, res) => {
 exports.updateBuyBoxInDb = async (req, res) => {
   const campaignId = req.params.id;
   const campaign = await Campaign.findById(campaignId);
-  const newbuybox = req.body.newbuybox;
-  campaign.buybox = newbuybox;
+  campaign.buybox = !campaign.buybox;
   try {
       campaign.save();
       return res.send({message: campaign.asin + ':' + ' ' + 'Buybox Updated' })
     } catch(e) {
-        return console.log(e);
+        return res.send({message: 'Error saving new buybox'});
     }
 }
 
