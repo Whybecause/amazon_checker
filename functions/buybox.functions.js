@@ -50,7 +50,7 @@ exports.searchBuybox = async (asin) => {
       await page.waitForSelector("body");
       const buybox = await page.evaluate(() => {
         let vendor = document.body.querySelector("#merchant-info").innerText;
-        let buyboxState = vendor.match("Amazon");
+        let buyboxState = vendor.match("Expédié et vendu par Amazon.");
         return buyboxState !== null ? buyboxState = true : buyboxState = false
       });
       await browser.close();

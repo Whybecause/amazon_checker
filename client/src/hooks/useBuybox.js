@@ -33,6 +33,7 @@ export const useGetAndUpdateBuybox = () => {
       .then((result) => {
         setCheckingProgress("Checking..." + [i + 1] + "/" + campaigns.length);
         const foundBuybox = result.data;
+        console.log(foundBuybox);
         updateBuybox(foundBuybox, campaigns, i);
         })
         .catch((err) => {
