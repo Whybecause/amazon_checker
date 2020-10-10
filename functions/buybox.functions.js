@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer-extra");
-// const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-// puppeteer.use(StealthPlugin());
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+puppeteer.use(StealthPlugin());
 
 let user_agent = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
@@ -36,7 +36,7 @@ exports.searchBuybox = async (asin) => {
         ],
       });
       const page = await browser.newPage();
-      await page.setDefaultNavigationTimeout(600000);
+      // await page.setDefaultNavigationTimeout(600000);
       // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
       await page.setRequestInterception(true);
       page.on('request', (req) => {
