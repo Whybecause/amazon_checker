@@ -1,70 +1,50 @@
 import React from "react";
+import useSWR from "swr";
+import moment from "moment";
 import {
-  fetchBuybox,
-  saveBuyboxInDb,
+  getBuybox,
+  patchBuyboxInDb,
   saveUpdateBuyboxTime,
   getUpdateBuyboxTime,
 } from "../services/buyboxClientAPI";
-import useSWR from "swr";
-import moment from "moment";
 
-export const useBuybox = (campaigns) => {
-  const [buyboxMsg, setBuyboxMsg] = React.useState("");
-  const [buyboxMsgSuccess, setBuyboxMsgSuccess] = React.useState("");
-  const [buyboxLoading, setBuyboxLoading] = React.useState(false);
-  const [ serverMsg, setServerMsg ] = React.useState(undefined);
-  const patchBuybox = (campaign) => {
-    if (campaign.updated.length) {
-      saveBuyboxInDb(campaign)
-        .then((success) => {
-          setBuyboxMsgSuccess((oldArray) => [...oldArray, success.message]);
-        })
-        .catch((error) => {
-          setBuyboxMsg((oldArray) => [
-            ...oldArray,
-            error + "Error saving Buybox",
-          ]);
-        });
+export const useGetAndUpdateBuybox = () => {
+  const [checkingProgress, setCheckingProgress] = React.useState("");
+  const [updatedMsg, setUpdatedMsg] = React.useState("");
+  const [noChangeMsg, setNoChangeMsg] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const updateBuybox = (foundBuybox, campaigns, i) => {
+    if (campaigns[i].buybox !== foundBuybox) {
+      patchBuyboxInDb(campaigns, i, foundBuybox)
+      .then(update => setUpdatedMsg((oldArr) => [...oldArr, update.data.message]))
+      .catch(err => console.log(err));
     } else {
-      setBuyboxMsg((oldArray) => [
-        ...oldArray,
-        campaign.noChange[0].asin + "No Change",
-      ]);
+      setNoChangeMsg((oldArr) => [...oldArr, campaigns[i].asin]);
     }
-  };
-  const checkBuybox = async () => {
-    setBuyboxLoading(true);
-    setServerMsg(campaigns.message)
+  }
+  const getAndUpdateBuybox = async (campaigns) => {
     if (!campaigns.length) {
-      setBuyboxLoading(false);
-      return;
+      return setCheckingProgress(campaigns.message)
     }
-    await campaigns.map((campaign) => {
-      fetchBuybox(campaign)
-        .then(patchBuybox)
-        .then((res) => {
-          setBuyboxLoading(false);
-          saveUpdateBuyboxTime();
+    for (let i = 0; i < campaigns.length; i++) {
+      setIsLoading(true);
+      await getBuybox(campaigns, i)
+      .then((result) => {
+        setCheckingProgress("Checking..." + [i + 1] + "/" + campaigns.length);
+        const foundBuybox = result.data;
+        updateBuybox(foundBuybox, campaigns, i);
         })
-        .catch((error) => {
-          setBuyboxLoading(false);
-          setBuyboxMsg((oldArray) => [
-            ...oldArray,
-            error + "Error checking Buybox",
-          ]);
+        .catch((err) => {
+          setIsLoading(false);
+          console.log("Error Checking Buybox");
         });
-        return campaign;
-    });
-    
+    }
+    setIsLoading(false);
+    saveUpdateBuyboxTime();
   };
-  return {
-    checkBuybox,
-    buyboxMsg,
-    buyboxMsgSuccess,
-    buyboxLoading,
-    serverMsg
-  };
-};
+  return {getAndUpdateBuybox, checkingProgress, updatedMsg, noChangeMsg, isLoading }
+}
 
 export const useGetUpdateBuyboxTime = () => {
   const { data, error } = useSWR("update", getUpdateBuyboxTime);

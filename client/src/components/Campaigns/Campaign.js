@@ -1,6 +1,4 @@
 import React from "react";
-import ModalComponent from '../Modal';
-
 const Campaign = ({campaign, markAsActive, removeCampaign, isLoading, showModal, handleShowModal, handleCloseModal}) => {
   return (
     <>

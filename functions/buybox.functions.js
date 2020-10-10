@@ -21,16 +21,11 @@ let user_agent = [
   'Mozilla/5.0 (Linux; Android 6.0.1; SAMSUNG SM-N910F Build/MMB29M) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/4.0 Chrome/44.0.2403.133 Mobile Safari/537.36',
   'Mozilla/5.0 (Linux; U; Android-4.0.3; en-us; Galaxy Nexus Build/IML74K) AppleWebKit/535.7 (KHTML, like Gecko) CrMo/16.0.912.75 Mobile Safari/535.7',
   'Mozilla/5.0 (Linux; Android 7.0; HTC 10 Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.83 Mobile Safari/537.36',
-  // 'curl/7.35.0',
-  // 'Wget/1.15 (linux-gnu)',
-  // 'Lynx/2.8.8pre.4 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/2.12.23',
 ];
 let random_number = Math.floor(Math.random() * 20);
 const uri = process.env.uri;
 
 exports.searchBuybox = async (asin) => {
-    let updated = [];
-    let noChange= [];
     const browser = await puppeteer.launch({
         headless: true,
         args: [
@@ -40,7 +35,6 @@ exports.searchBuybox = async (asin) => {
           `--user-agent=${user_agent[random_number]}`,
         ],
       });
-      
       const page = await browser.newPage();
       await page.setDefaultNavigationTimeout(600000);
       // PREVENT LAUNCHING CSS AND IMAGE TO SPEED UP REQUEST :
@@ -52,26 +46,13 @@ exports.searchBuybox = async (asin) => {
           req.continue();
         }
       });
-      // ---------------
       await page.goto(uri + asin);
       await page.waitForSelector("body");
-      
       const buybox = await page.evaluate(() => {
         let vendor = document.body.querySelector("#merchant-info").innerText;
         let buyboxState = vendor.match("Amazon");
         return buyboxState !== null ? buyboxState = true : buyboxState = false
       });
-      // console.log(asin + campaign.buybox + buybox);
-      
-      // if (buybox !== campaign.buybox) {
-      //   updated.push({id: campaign.id, asin: campaign.asin, state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
-        
-      // } else {
-      //   noChange.push({id: campaign.id, asin: campaign.asin,  state: campaign.state, oldbuybox: campaign.buybox, newbuybox: buybox})
-      // }
       await browser.close();
-    
-    
-    // return ({updated: updated, noChange: noChange});
       return buybox;
 }

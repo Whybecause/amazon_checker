@@ -1,42 +1,50 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 
 import { useCampaigns } from "../hooks/useCampaigns";
-import { useBuybox } from "../hooks/useBuybox";
-
-let url = "/api/campaigns/all"
+import { useGetAndUpdateBuybox } from "../hooks/useBuybox";
+let url = "/api/campaigns/all";
 
 const BuyboxContainer = () => {
-    const {campaigns} = useCampaigns(url);
-    const {checkBuybox, buyboxMsg, buyboxMsgSuccess, buyboxLoading, serverMsg} = useBuybox(campaigns);
-    React.useEffect(() => {
-        checkBuybox()
-    }, [campaigns]);
-
-    return (
-        <Container>
-            {buyboxLoading && <div className="spinner-svg c-flex1"></div>}
-            {buyboxMsg && (
-                <div className="text-center">
-                    <p>{buyboxMsg.length} campaign unchanged</p>
-                    {buyboxMsg.map( (bbMsg, index) => (
-                        <p key={index}>{bbMsg}</p>
-                        ))}
-                </div>
-            )}   
-            {buyboxMsgSuccess && (
-                <div className="text-center">
-                    <a href="/campaigns" className="btn btn-success">See {buyboxMsgSuccess.length} changes</a>
-                    {buyboxMsgSuccess.map ( (successMsg, index) => (
-                        <p key={index}>{successMsg}</p>
-                    ))}
-                </div>
+  const { campaigns, message } = useCampaigns(url);
+  const { getAndUpdateBuybox, checkingProgress, updatedMsg, noChangeMsg, isLoading } = useGetAndUpdateBuybox(campaigns);
+  return (
+    <Container>
+      <div className="c-flex2">
+        {message.length ? (
+          <div>{message}</div>
+        ) : (
+          <button
+            className="btn btn-primary"
+            onClick={() => getAndUpdateBuybox(campaigns)}
+            disabled={isLoading}
+          >
+            {isLoading && (
+              <span className="spinner-border spinner-border-sm"></span>
             )}
-            {serverMsg && (
-                <p className="text-center">{serverMsg}</p>
-            )}
-        </Container>
-    )
-}
+            <span>Check</span>
+          </button>
+        )}
+      </div>
+      <div className="c-flex2 m-top-1">
+        {checkingProgress && <div>{checkingProgress}</div>}
+      </div>
+      <Row>
+        <Col lg={6} sm={6} className="m-top-1 text-center">
+          {updatedMsg &&
+            updatedMsg.map((updated, index) => (
+              <div key={index}>{updated}</div>
+            ))}
+        </Col>
+        <Col lg={6} sm={6} className="m-top-1 text-center">
+          {noChangeMsg &&
+            noChangeMsg.map((noChange, index) => (
+              <div key={index}>{noChange} No Change</div>
+            ))}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
 export default BuyboxContainer;
