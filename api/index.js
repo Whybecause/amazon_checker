@@ -32,15 +32,23 @@ mongoose.connect(process.env.MONGO_URI,
 .then(() => console.log('Connexion Mongodb réussie!'))
 .catch(() => console.log('Connexion Mongodb échouée!'))
 
+// Pour AWS
+const appPath = path.join(__dirname, "../client/build");
+app.use(express.static(appPath));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(appPath, "index.html"));
+});
+
 // Pour Heroku : 
-if (process.env.NODE_ENV === "production") {
-    const appPath = path.join(__dirname, "client", "build");
-    app.use(express.static(appPath));
-  
-    app.get("*", (req, res) => {
-        res.sendFile(path.resolve(appPath, "index.html"));
-    });
-  }
+// if (process.env.NODE_ENV === "production") {
+//   const appPath = path.join(__dirname, "client", "build");
+//   app.use(express.static(appPath));
+
+//   app.get("*", (req, res) => {
+//       res.sendFile(path.resolve(appPath, "index.html"));
+//   });
+// }
 
 mongoose.connection.on('open', () => {
     app.listen(PORT, ip);
