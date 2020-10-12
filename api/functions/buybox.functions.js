@@ -28,6 +28,7 @@ const uri = process.env.uri;
 exports.searchBuybox = async (asin) => {
     const browser = await puppeteer.launch({
         headless: true,
+        ignoreHTTPSErrors :true,
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
@@ -46,7 +47,7 @@ exports.searchBuybox = async (asin) => {
           req.continue();
         }
       });
-      await page.goto(uri + asin);
+      await page.goto(uri + asin, {waitUntil: 'networkidle2'});
       await page.waitForSelector("body");
       const buybox = await page.evaluate(() => {
         let vendor = document.body.querySelector("#merchant-info").innerText;
