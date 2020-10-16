@@ -9,7 +9,9 @@ exports.getBuyBox = async (req, res) => {
     .then( (foundBuybox) => {
       res.send(foundBuybox)
     })
-    .catch(e => res.send({message: 'Error getting Buybox'}));
+    .catch(e => {
+      res.send({message: 'Error getting Buybox'})
+    });
 };
 
 
